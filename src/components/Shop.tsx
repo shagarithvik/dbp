@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ShoppingBag, Star, Search, Filter, X, Plus, Minus, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, ShoppingBag, Star, Search, X, Plus, Minus, Eye, ChevronRight } from 'lucide-react';
+import { CONFIG } from '../config';
 
 const products = [
   {
@@ -108,6 +109,8 @@ export default function Shop() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<typeof products[0] | null>(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string>('');
+  const [quantity, setQuantity] = useState<number>(1);
 
   const filteredProducts = products.filter((product) => {
     const matchesFilter = activeFilter === 'All' || product.category === activeFilter;
@@ -117,7 +120,42 @@ export default function Shop() {
 
   const openQuickView = (product: typeof products[0]) => {
     setSelectedProduct(product);
+    setSelectedColor(product.colors[0] || '');
+    setQuantity(1);
     setIsQuickViewOpen(true);
+  };
+
+  const handleBuy = (product: typeof products[0], qty: number = 1, colorHex?: string) => {
+    const colorNames: Record<string, string> = {
+      '#7a1f35': 'Maroon',
+      '#d4af37': 'Gold',
+      '#e8a0bf': 'Pink',
+      '#fff8f0': 'Cream/Pearl',
+      '#1a5276': 'Peacock Blue',
+      '#c0392b': 'Red',
+      '#8b5e3c': 'Mandala Brown',
+      '#f8d7c4': 'Peach',
+      '#ffe6cc': 'Light Orange',
+    };
+    
+    let colorDetail = '';
+    if (colorHex) {
+      const name = colorNames[colorHex.toLowerCase()] || colorHex;
+      colorDetail = `\n- *Color:* ${name}`;
+    }
+    
+    const totalPrice = product.price * qty;
+    const messageText = `Hi Priyanka! I'd like to buy:
+- *Product:* ${product.name}
+- *Category:* ${product.category}${colorDetail}
+- *Quantity:* ${qty}
+- *Price:* Rs. ${product.price} each
+- *Total Price:* Rs. ${totalPrice}
+
+Please let me know the availability and payment details.`;
+
+    const url = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(messageText)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -228,11 +266,16 @@ export default function Shop() {
                     </motion.button>
                   </div>
 
-                  {/* Add to cart overlay */}
                   <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    <button className="w-full btn-secondary flex items-center justify-center gap-2 text-sm py-3">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleBuy(product, 1);
+                      }}
+                      className="w-full btn-secondary flex items-center justify-center gap-2 text-sm py-3"
+                    >
                       <ShoppingBag className="w-4 h-4" />
-                      Add to Cart
+                      Buy on WhatsApp
                     </button>
                   </div>
                 </div>
@@ -372,39 +415,48 @@ export default function Shop() {
                     Perfect for festive occasions and weddings.
                   </p>
 
-                  {/* Colors */}
                   <div className="mt-6">
                     <p className="text-sm font-medium text-maroon-800 mb-2">Available Colors</p>
                     <div className="flex gap-2">
                       {selectedProduct.colors.map((color, i) => (
                         <button
                           key={i}
-                          className="w-8 h-8 rounded-full border-2 border-white shadow-md hover:scale-110 transition-transform"
+                          onClick={() => setSelectedColor(color)}
+                          className={`w-8 h-8 rounded-full border-2 shadow-md hover:scale-110 transition-transform ${
+                            selectedColor === color ? 'border-maroon-600 scale-110 ring-2 ring-maroon-200' : 'border-white'
+                          }`}
                           style={{ backgroundColor: color }}
                         />
                       ))}
                     </div>
                   </div>
 
-                  {/* Quantity */}
                   <div className="mt-6">
                     <p className="text-sm font-medium text-maroon-800 mb-2">Quantity</p>
                     <div className="flex items-center gap-3">
-                      <button className="w-10 h-10 rounded-full bg-cream-200 flex items-center justify-center hover:bg-cream-300 transition-colors">
+                      <button 
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="w-10 h-10 rounded-full bg-cream-200 flex items-center justify-center hover:bg-cream-300 transition-colors"
+                      >
                         <Minus className="w-4 h-4" />
                       </button>
-                      <span className="text-lg font-semibold text-maroon-800 w-8 text-center">1</span>
-                      <button className="w-10 h-10 rounded-full bg-cream-200 flex items-center justify-center hover:bg-cream-300 transition-colors">
+                      <span className="text-lg font-semibold text-maroon-800 w-8 text-center">{quantity}</span>
+                      <button 
+                        onClick={() => setQuantity(quantity + 1)}
+                        className="w-10 h-10 rounded-full bg-cream-200 flex items-center justify-center hover:bg-cream-300 transition-colors"
+                      >
                         <Plus className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
 
-                  {/* Actions */}
                   <div className="flex gap-3 mt-8">
-                    <button className="flex-1 btn-primary flex items-center justify-center gap-2">
+                    <button 
+                      onClick={() => handleBuy(selectedProduct, quantity, selectedColor)}
+                      className="flex-1 btn-primary flex items-center justify-center gap-2"
+                    >
                       <ShoppingBag className="w-5 h-5" />
-                      Add to Cart
+                      Buy on WhatsApp
                     </button>
                     <button className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center hover:bg-rose-100 transition-colors">
                       <Heart className="w-5 h-5 text-rose-500" />

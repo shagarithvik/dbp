@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Upload, Sparkles, Star, Clock, Heart, Check } from 'lucide-react';
+import { CONFIG } from '../config';
 
 const occasions = [
   'Wedding',
@@ -39,8 +40,23 @@ export default function CustomOrder() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const messageText = `Hi Priyanka! I'd like to place a Custom Order:
+- *Name:* ${formData.name}
+- *Phone:* ${formData.phone}
+- *Email:* ${formData.email}
+- *Occasion:* ${formData.occasion}
+- *Bangle Size:* ${formData.bangleSize}
+- *Preferred Colors:* ${formData.preferredColors}
+- *Quantity:* ${formData.quantity}
+- *Special Instructions:* ${formData.specialInstructions || 'None'}`;
+
+    const url = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(messageText)}`;
+
+    // Simulate short loader for premium UX
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    window.open(url, '_blank', 'noopener,noreferrer');
+
     setIsSubmitting(false);
     setIsSubmitted(true);
   };

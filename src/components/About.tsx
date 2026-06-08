@@ -6,37 +6,43 @@ const highlights = [
     icon: Heart,
     title: 'Handmade With Love',
     description: 'Every piece crafted with passion and dedication',
-    color: 'rose',
+    bgColor: 'bg-rose-100',
+    textColor: 'text-rose-600',
   },
   {
     icon: Palette,
     title: 'Unique Custom Designs',
     description: 'Personalized creations tailored to your vision',
-    color: 'gold',
+    bgColor: 'bg-gold-100',
+    textColor: 'text-gold-600',
   },
   {
     icon: Award,
     title: 'Premium Craftsmanship',
     description: 'Quality materials and meticulous attention to detail',
-    color: 'maroon',
+    bgColor: 'bg-maroon-100',
+    textColor: 'text-maroon-600',
   },
   {
     icon: Sparkles,
     title: 'Festive Collections',
     description: 'Special designs for every celebration',
-    color: 'peach',
+    bgColor: 'bg-peach-100',
+    textColor: 'text-peach-600',
   },
   {
     icon: BookOpen,
     title: 'DIY Learning',
     description: 'Learn the art of crafting through tutorials',
-    color: 'warm',
+    bgColor: 'bg-warm-100',
+    textColor: 'text-warm-600',
   },
   {
     icon: Gift,
     title: 'Personalized Gifts',
     description: 'Thoughtful handmade gifts for loved ones',
-    color: 'gold',
+    bgColor: 'bg-gold-100',
+    textColor: 'text-gold-600',
   },
 ];
 
@@ -173,8 +179,8 @@ export default function About() {
               whileHover={{ y: -5, scale: 1.02 }}
               className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-cream-300 shadow-lg shadow-maroon-900/5 transition-all duration-300"
             >
-              <div className={`w-12 h-12 rounded-xl bg-${item.color}-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                <item.icon className={`w-6 h-6 text-${item.color}-600`} />
+              <div className={`w-12 h-12 rounded-xl ${item.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                <item.icon className={`w-6 h-6 ${item.textColor}`} />
               </div>
               <h4 className="font-serif text-lg font-semibold text-maroon-800 mb-2">{item.title}</h4>
               <p className="text-warm-500 text-sm">{item.description}</p>

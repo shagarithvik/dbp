@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, Send, Instagram, Youtube } from 'lucide-react';
+import { CONFIG } from '../config';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -14,10 +15,30 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    
+    const subjectMap: Record<string, string> = {
+      order: 'Order Inquiry',
+      custom: 'Custom Order',
+      workshop: 'Workshop Information',
+      collaboration: 'Collaboration',
+      other: 'Other',
+    };
+    
+    const subjectText = subjectMap[formData.subject] || formData.subject;
+    const text = `Hi Priyanka! I have an inquiry from the website contact form:
+- *Name:* ${formData.name}
+- *Email:* ${formData.email}
+- *Subject:* ${subjectText}
+- *Message:* ${formData.message}`;
+
+    const url = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+    
+    // Simulate short loader for premium UX
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    window.open(url, '_blank', 'noopener,noreferrer');
+    
     setIsSubmitting(false);
     setFormData({ name: '', email: '', subject: '', message: '' });
-    alert('Message sent successfully!');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -61,8 +82,9 @@ export default function Contact() {
                 title: 'Phone / WhatsApp',
                 content: '+91 98765 43210',
                 subContent: 'Available on WhatsApp',
-                href: 'https://wa.me/919876543210',
-                color: 'emerald',
+                href: `https://wa.me/${CONFIG.WHATSAPP_NUMBER}`,
+                bgColor: 'bg-emerald-100',
+                textColor: 'text-emerald-600',
               },
               {
                 icon: Mail,
@@ -70,21 +92,24 @@ export default function Contact() {
                 content: 'hello@diybypriyanka.com',
                 subContent: 'We reply within 24 hours',
                 href: 'mailto:hello@diybypriyanka.com',
-                color: 'maroon',
+                bgColor: 'bg-maroon-100',
+                textColor: 'text-maroon-600',
               },
               {
                 icon: MapPin,
                 title: 'Location',
                 content: 'Mumbai, Maharashtra',
                 subContent: 'India (Shipping Pan India)',
-                color: 'gold',
+                bgColor: 'bg-gold-100',
+                textColor: 'text-gold-600',
               },
               {
                 icon: Clock,
                 title: 'Business Hours',
                 content: 'Mon - Sat: 10 AM - 7 PM',
                 subContent: 'Sunday: Closed',
-                color: 'rose',
+                bgColor: 'bg-rose-100',
+                textColor: 'text-rose-600',
               },
             ].map((item, index) => (
               <motion.a
@@ -97,8 +122,8 @@ export default function Contact() {
                 whileHover={{ x: 5 }}
                 className="flex items-start gap-4 p-5 bg-white rounded-xl shadow-sm border border-cream-200 hover:border-gold-300 transition-all group"
               >
-                <div className={`w-12 h-12 rounded-xl bg-${item.color}-100 flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <item.icon className={`w-6 h-6 text-${item.color}-600`} />
+                <div className={`w-12 h-12 rounded-xl ${item.bgColor} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                  <item.icon className={`w-6 h-6 ${item.textColor}`} />
                 </div>
                 <div>
                   <h4 className="font-medium text-maroon-800">{item.title}</h4>
